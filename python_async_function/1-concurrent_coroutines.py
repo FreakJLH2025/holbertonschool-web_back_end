@@ -1,16 +1,34 @@
 #!/usr/bin/env python3
-""" Let's execute multiple coroutines at the same time with async """
-import asyncio
+"""Module contains function that takes two integers
+
+Imports:
+    List: module for list type annotation
+    wait_random: function delays for n seconds and returns n
+"""
 from typing import List
-import random
-
-
-wait_random = __import__('0-basic_async_syntax').wait_random
+random_wait = __import__('0-basic_async_syntax').wait_random
 
 
 async def wait_n(n: int, max_delay: int) -> List[float]:
-    """ Function that returns the list
+    """Function takes integers and calls wait_random function
+
+    Args:
+        n (int): num of times to call wait_random
+        max_delay (int): Num of seconds to delay wait_random
+
+    Returns:
+        List[float]: List of wait_random returns
     """
-    l = [asyncio.create_task(wait_random(max_delay)) for i in range(n)]
-    finish = [await task for task in asyncio.as_completed(l)]
-    return finish
+    myList: List[float] = []
+    i: int = 0
+
+    while i < n:
+        result = await random_wait(max_delay)
+        myList.append(result)
+        i += 1
+
+    for end in range(len(myList), 1, -1):
+        for j in range(1, end):
+            if myList[j - 1] > myList[j]:
+                myList[j - 1], myList[j] = myList[j], myList[j - 1]
+    return myList
