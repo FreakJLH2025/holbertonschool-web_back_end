@@ -12,6 +12,7 @@ export default function handleProfileSignup(firstName, lastName, fileName) {
       if (result.status === 'fulfilled') {
         return { status: result.status, value: result.value };
       }
+      // Mantener el objeto Error sin convertirlo a string
       return { status: result.status, value: result.reason };
     })
   );
