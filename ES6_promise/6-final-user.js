@@ -10,10 +10,16 @@ export default function handleProfileSignup(firstName, lastName, fileName) {
   ]).then((results) =>
     results.map((result) => {
       if (result.status === 'fulfilled') {
-        return { status: result.status, value: result.value };
+        return {
+          status: result.status,
+          value: result.value,
+        };
       }
-      // Mantener el objeto Error sin convertirlo a string
-      return { status: result.status, value: result.reason };
+
+      return {
+        status: result.status,
+        value: result.reason.toString(),
+      };
     })
   );
 }
