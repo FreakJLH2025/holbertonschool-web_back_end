@@ -1,10 +1,10 @@
-// 7-http_express.js
+#!/usr/bin/env node
 
 const express = require('express');
 const fs = require('fs');
 
 const app = express();
-const port = 1245;
+
 const database = process.argv[2];
 
 function countStudents(path) {
@@ -15,32 +15,38 @@ function countStudents(path) {
         return;
       }
 
-      const lines = data.trim().split('\n');
-      if (lines.length <= 1) {
-        reject(new Error('Cannot load the database'));
-        return;
-      }
+      const lines = data
+        .split('\n')
+        .filter((line) => line.trim() !== '');
 
-      const students = lines.slice(1).filter((line) => line.trim() !== '');
+      const students = lines.slice(1);
+
       const fields = {};
 
-      students.forEach((line) => {
-        const parts = line.split(',');
-        const firstName = parts[0].trim();
-        const field = parts[3].trim();
+      students.forEach((student) => {
+        const values = student.split(',');
+        const firstName = values[0];
+        const field = values[3];
 
         if (!fields[field]) {
           fields[field] = [];
         }
+
         fields[field].push(firstName);
       });
 
-      let output = `Number of students: ${students.length}\n`;
+      const output = [];
+
+      output.push(`Number of students: ${students.length}`);
+
       Object.keys(fields).forEach((field) => {
-        output += `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}\n`;
+        output.push(
+          `Number of students in ${field}: ${fields[field].length}. `
+          + `List: ${fields[field].join(', ')}`,
+        );
       });
 
-      resolve(output.trim());
+      resolve(output.join('\n'));
     });
   });
 }
@@ -50,17 +56,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/students', (req, res) => {
-  res.type('text/plain');
   countStudents(database)
-    .then((output) => {
-      res.send(`This is the list of our students\n${output}`);
+    .then((students) => {
+      res.send(`This is the list of our students\n${students}`);
     })
-    .catch((err) => {
-      res.send(`This is the list of our students\n${err.message}`);
+    .catch(() => {
+      res.send('This is the list of our students\nCannot load the database');
     });
 });
 
-app.listen(port);
+app.listen(1245);
 
 module.exports = app;
-
