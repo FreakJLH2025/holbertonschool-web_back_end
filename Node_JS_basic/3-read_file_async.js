@@ -1,4 +1,4 @@
-// 3-read_file_async.js
+#!/usr/bin/env node
 
 const fs = require('fs');
 
@@ -10,32 +10,32 @@ function countStudents(path) {
         return;
       }
 
-      const lines = data.trim().split('\n');
-      if (lines.length <= 1) {
-        reject(new Error('Cannot load the database'));
-        return;
-      }
+      const lines = data
+        .split('\n')
+        .filter((line) => line.trim() !== '');
 
-      // Ignorar la primera línea (cabecera)
-      const students = lines.slice(1).filter((line) => line.trim() !== '');
+      const students = lines.slice(1);
 
       console.log(`Number of students: ${students.length}`);
 
       const fields = {};
-      students.forEach((line) => {
-        const parts = line.split(',');
-        const firstName = parts[0].trim();
-        const field = parts[3].trim();
+
+      students.forEach((student) => {
+        const values = student.split(',');
+        const firstName = values[0];
+        const field = values[3];
 
         if (!fields[field]) {
           fields[field] = [];
         }
+
         fields[field].push(firstName);
       });
 
       Object.keys(fields).forEach((field) => {
         console.log(
-          `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`
+          `Number of students in ${field}: ${fields[field].length}. `
+          + `List: ${fields[field].join(', ')}`,
         );
       });
 
